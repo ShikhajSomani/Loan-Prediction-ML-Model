@@ -67,4 +67,4 @@ The best parameters were selected based on cross-validation accuracy.
 The final trained model was saved using `joblib`:
 
 ```python
-joblib.dump(log_reg, "loan_prediction.pkl")
+joblib.dump(lr, "loan_prediction.pkl")
