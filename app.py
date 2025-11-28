@@ -20,25 +20,19 @@ Credit_History = st.selectbox("Credit History", [1.0, 0.0])
 Property_Area = st.selectbox("Property Area", ["Urban", "Rural", "Semiurban"])
 
 def preprocess():
-
-    gender = 1 if Gender == "Male" else 0
-    married = 1 if Married == "Yes" else 0
-    dependents = 3 if Dependents == "3+" else int(Dependents)
-    education = 1 if Education == "Graduate" else 0
-    self_emp = 1 if Self_Employed == "Yes" else 0
-
-    property_map = {"Urban": 2, "Semiurban": 1, "Rural": 0}
-    property_area = property_map[Property_Area]
-
-    features = np.array([[gender, married, dependents, education, self_emp,
-                          ApplicantIncome, CoapplicantIncome, LoanAmount,
-                          Loan_Amount_Term, Credit_History, property_area]])
-
+    features = pd.DataFrame([[Gender, Married, Dependents, Education, Self_Employed,
+                             ApplicantIncome, CoapplicantIncome, LoanAmount,
+                             Loan_Amount_Term, Credit_History, Property_Area]],
+                             columns=['Gender','Married','Dependents','Education',
+                                      'Self_Employed','ApplicantIncome','CoapplicantIncome',
+                                      'LoanAmount','Loan_Amount_Term','Credit_History',
+                                      'Property_Area'])
     return features
+
 
 if st.button("Check Loan Status"):
     input_data = preprocess()
-    result = model.predict(input_data)[0]  
+    result = model.predict(preprocess())[0]
 
     if result == "Y":
         st.success("🎉 Loan Approved!")
