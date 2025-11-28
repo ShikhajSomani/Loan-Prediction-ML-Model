@@ -1,44 +1,46 @@
 import streamlit as st
-import pickle
-import numpy as np
+import joblib
 import pandas as pd
+import numpy as np
 
-model = pickle.load(open('loan_prediction.pkl', 'rb'))
+model = joblib.load("loan_prediction.pkl")
 
-st.title("Loan Approval Prediction")
+st.title("💰 Loan Approval Prediction App")
 
-gender = st.selectbox('Gender', ['Male','Female'])
-married = st.selectbox('Married', ['No','Yes'])
-dependents = st.selectbox('Dependents', ['0','1','2','3+'])
-education = st.selectbox('Education', ['Graduate','Not Graduate'])
-self_employed = st.selectbox('Self Employed', ['No','Yes'])
-applicant_income = st.number_input('Applicant Income', min_value=0)
-coapplicant_income = st.number_input('Coapplicant Income', min_value=0)
-loan_amount = st.number_input('Loan Amount', min_value=0)
-loan_amount_term = st.number_input('Loan Amount Term (in days)', min_value=0)
-credit_history = st.selectbox('Credit History', ['0','1'])
-property_area = st.selectbox('Property Area', ['Urban','Rural','Semiurban'])
+Gender = st.selectbox("Gender", ["Male", "Female"])
+Married = st.selectbox("Married", ["Yes", "No"])
+Dependents = st.selectbox("Dependents", ["0", "1", "2", "3+"])
+Education = st.selectbox("Education", ["Graduate", "Not Graduate"])
+Self_Employed = st.selectbox("Self Employed", ["Yes", "No"])
+ApplicantIncome = st.number_input("Applicant Income", min_value=0, step=1)
+CoapplicantIncome = st.number_input("Coapplicant Income", min_value=0, step=1)
+LoanAmount = st.number_input("Loan Amount", min_value=0, step=1)
+Loan_Amount_Term = st.number_input("Loan Amount Term (in days)", min_value=0, step=1)
+Credit_History = st.selectbox("Credit History", [1.0, 0.0])
+Property_Area = st.selectbox("Property Area", ["Urban", "Rural", "Semiurban"])
 
-def preprocess_input():
-    gender_val = 1 if gender == 'Male' else 0
-    married_val = 1 if married == 'Yes' else 0
-    dep = 3 if dependents == '3+' else int(dependents)
-    education_val = 1 if education == 'Graduate' else 0
-    self_emp_val = 1 if self_employed == 'Yes' else 0
-    credit_history_val = int(credit_history)
-    prop_map = {'Urban': 2, 'Semiurban': 1, 'Rural': 0}
-    prop_area_val = prop_map[property_area]
+def preprocess():
 
-    features = [gender_val, married_val, dep, education_val, self_emp_val,
-                applicant_income, coapplicant_income, loan_amount,
-                loan_amount_term, credit_history_val, prop_area_val]
-    return np.array(features).reshape(1, -1)
+    gender = 1 if Gender == "Male" else 0
+    married = 1 if Married == "Yes" else 0
+    dependents = 3 if Dependents == "3+" else int(Dependents)
+    education = 1 if Education == "Graduate" else 0
+    self_emp = 1 if Self_Employed == "Yes" else 0
 
-if st.button('Predict Loan Status'):
-    input_data = preprocess_input()
-    result = model.predict(input_data)[0]
-    
-    if result == 'Y' or result == 1:
-        st.success('🎉 Loan Approved')
+    property_map = {"Urban": 2, "Semiurban": 1, "Rural": 0}
+    property_area = property_map[Property_Area]
+
+    features = np.array([[gender, married, dependents, education, self_emp,
+                          ApplicantIncome, CoapplicantIncome, LoanAmount,
+                          Loan_Amount_Term, Credit_History, property_area]])
+
+    return features
+
+if st.button("Check Loan Status"):
+    input_data = preprocess()
+    result = model.predict(input_data)[0]  
+
+    if result == "Y":
+        st.success("🎉 Loan Approved!")
     else:
-        st.error('❌ Loan Rejected')
+        st.error("❌ Loan Rejected")
