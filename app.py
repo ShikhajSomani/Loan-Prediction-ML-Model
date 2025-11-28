@@ -20,15 +20,27 @@ Credit_History = st.selectbox("Credit History", [1.0, 0.0])
 Property_Area = st.selectbox("Property Area", ["Urban", "Rural", "Semiurban"])
 
 def preprocess():
-    features = pd.DataFrame([[Gender, Married, Dependents, Education, Self_Employed,
-                             ApplicantIncome, CoapplicantIncome, LoanAmount,
-                             Loan_Amount_Term, Credit_History, Property_Area]],
-                             columns=['Gender','Married','Dependents','Education',
-                                      'Self_Employed','ApplicantIncome','CoapplicantIncome',
-                                      'LoanAmount','Loan_Amount_Term','Credit_History',
-                                      'Property_Area'])
-    return features
+    gender = 1 if Gender == "Male" else 0
+    married = 1 if Married == "Yes" else 0
+    education = 1 if Education == "Graduate" else 0
+    self_employed = 1 if Self_Employed == "Yes" else 0
+    credit = float(Credit_History)
 
+    # One-Hot Encoding for Property_Area
+    property_rural = 1 if Property_Area == "Rural" else 0
+    property_semiurban = 1 if Property_Area == "Semiurban" else 0
+    property_urban = 1 if Property_Area == "Urban" else 0
+
+    data = [[gender, married, Dependents, education, self_employed,
+             ApplicantIncome, CoapplicantIncome, LoanAmount,
+             Loan_Amount_Term, credit,
+             property_rural, property_semiurban, property_urban]]
+
+    columns = ['Gender','Married','Dependents','Education','Self_Employed',
+               'ApplicantIncome','CoapplicantIncome','LoanAmount','Loan_Amount_Term',
+               'Credit_History','Property_Area_Rural','Property_Area_Semiurban','Property_Area_Urban']
+
+    return pd.DataFrame(data, columns=columns)
 
 if st.button("Check Loan Status"):
     input_data = preprocess()
